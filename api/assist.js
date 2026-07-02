@@ -3,10 +3,27 @@ module.exports = async (req, res) => {
     return res.status(405).json({ error: 'Méthode non autorisée' });
   }
 
-  const { question } = req.body;
-  if (!question) {
-    return res.status(400).json({ error: 'Question manquante' });
+  const { mode, text } = req.body;
+  if (!text) {
+    return res.status(400).json({ error: 'Texte manquant' });
   }
+
+  const systemPrompts = {
+    resume: `Tu es un assistant bienveillant qui aide des personnes âgées ou peu à l'aise avec l'administratif à comprendre un courrier officiel français.
+On te donne le texte d'un courrier reçu. Réponds en français très simple, sans jargon, avec cette structure exacte :
+
+Ce courrier vient de : [organisme, en une ligne]
+Ce qu'il faut comprendre : [1-2 phrases simples]
+Ce qu'il faut faire : [liste numérotée d'actions concrètes, 1. 2. 3.]
+Avant quelle date : [délai si mentionné, sinon "Aucun délai précis indiqué"]
+
+Reste concis : 150 mots maximum. Ne donne jamais de conseil juridique ou fiscal engageant.`,
+    reponse: `Tu es un assistant qui rédige des courriers de réponse administratifs simples et polis en français.
+On te donne le texte d'un courrier reçu. Rédige une lettre de réponse courte et neutre (format courrier classique : Madame, Monsieur, / Objet / corps / Cordialement / [Votre prénom et nom]) qui demande des explications, un délai, ou accuse réception, selon ce qui est le plus approprié au contenu du courrier.
+Reste général et neutre, sans engager la personne sur des faits qu'elle n'a pas donnés. 180 mots maximum.`
+  };
+
+  const systemPrompt = systemPrompts[mode] || systemPrompts.resume;
 
   try {
     const groqRes = await fetch('https://api.groq.com/openai/v1/chat/completions', {
@@ -18,40 +35,25 @@ module.exports = async (req, res) => {
       body: JSON.stringify({
         model: 'llama-3.3-70b-versatile',
         messages: [
-          {
-            role: 'system',
-            content: `Tu es un assistant bienveillant qui aide des personnes âgées ou peu à l'aise avec le numérique à comprendre leurs démarches administratives françaises.
-Règles strictes :
-- Réponds en français simple, sans jargon administratif.
-- Utilise des phrases courtes.
-- Structure ta réponse en étapes numérotées claires (1. 2. 3.).
-- Précise les documents nécessaires si pertinent.
-- Précise où aller (en ligne, en mairie, en préfecture, France Services...) si pertinent.
-- Ne donne jamais de conseil juridique ou fiscal engageant ; reste informatif et général.
-- Termine toujours en rappelant qu'en cas de doute, on peut se rendre dans un point France Services ou appeler l'organisme concerné.
-- Reste concis : 150 mots maximum.`
-          },
-          {
-            role: 'user',
-            content: question
-          }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: text }
         ],
         temperature: 0.4,
-        max_tokens: 400
+        max_tokens: 500
       })
     });
 
     const data = await groqRes.json();
-    const answer = data.choices?.[0]?.message?.content || null;
+    const result = data.choices?.[0]?.message?.content || null;
 
-    if (!answer) {
+    if (!result) {
       return res.status(500).json({
         error: 'Réponse indisponible',
         debug: JSON.stringify(data).slice(0, 500)
       });
     }
 
-    return res.status(200).json({ answer });
+    return res.status(200).json({ result });
   } catch (e) {
     return res.status(500).json({ error: 'Service indisponible', debug: e.message });
   }
