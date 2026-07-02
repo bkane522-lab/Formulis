@@ -234,6 +234,41 @@
   }
   .nav-btn .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
   .nav-btn.active { color: #2b6cb0; }
+
+  .pro-badge {
+    display: inline-block;
+    background: #7ee3b8;
+    color: #0f2647;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 3px 10px;
+    border-radius: 20px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  .quota-note { text-align: center; font-size: 12px; color: #5a6b7d; margin-bottom: 12px; }
+  .paywall-card {
+    background: #0f2647;
+    color: #fff;
+    border-radius: 18px;
+    padding: 24px 20px;
+    text-align: center;
+  }
+  .paywall-card .lion { font-size: 38px; margin-bottom: 6px; }
+  .paywall-card h3 { font-size: 20px; margin-bottom: 8px; }
+  .paywall-card p { font-size: 14px; opacity: 0.8; margin-bottom: 4px; }
+  .paywall-card .price { font-size: 32px; font-weight: 800; color: #7ee3b8; margin: 14px 0; }
+  .paywall-card a.buy-btn {
+    display: block;
+    background: #7ee3b8;
+    color: #0f2647;
+    font-weight: 800;
+    text-decoration: none;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 8px;
+  }
+  .unlocked-note { text-align: center; font-size: 12px; color: #1e7a3c; margin-bottom: 12px; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -242,7 +277,7 @@
   <div class="topbar-row">
     <div class="icon-badge">📋</div>
     <div>
-      <h1>Formulis</h1>
+      <h1>Formulis <span class="pro-badge" id="proBadge" style="display:none;">PRO</span></h1>
       <p>Vos démarches, expliquées simplement</p>
     </div>
   </div>
@@ -282,7 +317,10 @@
 
 <!-- ===== ASSISTANT ===== -->
 <div class="screen" id="screen-assistant">
-  <div class="card">
+  <p class="quota-note" id="quotaNote"></p>
+  <p class="unlocked-note" id="unlockedNote" style="display:none;">🔓 Accès Pro illimité activé — merci !</p>
+
+  <div class="card" id="assistantCard">
     <h2 class="section-title">Assistant guidé</h2>
     <div class="progress-wrap">
       <div class="step-label" id="stepLabel">Étape 1 sur 2</div>
@@ -315,6 +353,16 @@
         <button class="dark" id="copyDraftBtn" style="margin-top:12px;">Copier ce texte</button>
       </div>
     </div>
+  </div>
+
+  <div class="paywall-card" id="paywallCard" style="display:none;">
+    <div class="lion">📋</div>
+    <h3>Analyses gratuites épuisées</h3>
+    <p>Tu as utilisé tes 3 analyses gratuites du jour.</p>
+    <p>Débloque l'accès Pro illimité :</p>
+    <div class="price">2,99 €</div>
+    <a class="buy-btn" href="https://buy.stripe.com/test_cNi8wP7QQ4fzecH0uQgYU01" target="_blank">🔓 Débloquer Formulis Pro</a>
+    <p style="margin-top:14px; opacity:0.6; font-size:12px;">Ou reviens demain pour 3 nouvelles analyses gratuites.</p>
   </div>
 
   <p class="disclaimer">
@@ -380,11 +428,76 @@
 </div>
 
 <script>
+/* ===================== FREEMIUM / PRO ===================== */
+const FREE_DAILY_LIMIT = 3;
+
+(function checkUnlock() {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('unlocked') === 'true') {
+    localStorage.setItem('formulis_pro', 'true');
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+})();
+
+function isPro() { return localStorage.getItem('formulis_pro') === 'true'; }
+
+function getTodayKey() {
+  const d = new Date();
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+function getDailyUsage() {
+  const data = JSON.parse(localStorage.getItem('formulis_daily') || '{}');
+  if (data.date !== getTodayKey()) return { date: getTodayKey(), count: 0 };
+  return data;
+}
+function incrementDailyUsage() {
+  const data = getDailyUsage();
+  data.count++;
+  localStorage.setItem('formulis_daily', JSON.stringify(data));
+}
+function remainingFree() {
+  if (isPro()) return Infinity;
+  return Math.max(0, FREE_DAILY_LIMIT - getDailyUsage().count);
+}
+
+function updateProUI() {
+  const proBadge = document.getElementById('proBadge');
+  const quotaNote = document.getElementById('quotaNote');
+  const unlockedNote = document.getElementById('unlockedNote');
+  const assistantCard = document.getElementById('assistantCard');
+  const paywallCard = document.getElementById('paywallCard');
+
+  if (isPro()) {
+    proBadge.style.display = 'inline-block';
+    quotaNote.style.display = 'none';
+    unlockedNote.style.display = 'block';
+    assistantCard.style.display = 'block';
+    paywallCard.style.display = 'none';
+    return;
+  }
+
+  proBadge.style.display = 'none';
+  unlockedNote.style.display = 'none';
+  const remaining = remainingFree();
+  quotaNote.style.display = 'block';
+  quotaNote.textContent = `${remaining} analyse(s) gratuite(s) restante(s) aujourd'hui`;
+
+  if (remaining <= 0) {
+    assistantCard.style.display = 'none';
+    paywallCard.style.display = 'block';
+  } else {
+    assistantCard.style.display = 'block';
+    paywallCard.style.display = 'none';
+  }
+}
+updateProUI();
+
 /* ===================== NAVIGATION ===================== */
 function goTab(tab) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.getElementById('screen-' + tab).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  if (tab === 'assistant') updateProUI();
   window.scrollTo(0, 0);
 }
 document.querySelectorAll('.nav-btn').forEach(btn => {
@@ -423,6 +536,8 @@ pasteBtn.addEventListener('click', async () => {
 clearBtn.addEventListener('click', () => { letterText.value = ''; });
 
 analyzeBtn.addEventListener('click', async () => {
+  if (remainingFree() <= 0) { updateProUI(); return; }
+
   const text = letterText.value.trim();
   if (!text) { alert('Collez ou tapez le texte du courrier reçu.'); return; }
   lastLetter = text;
@@ -445,6 +560,7 @@ analyzeBtn.addEventListener('click', async () => {
       assistStep1.style.display = 'none';
       assistStep2.style.display = 'block';
       draftBox.style.display = 'none';
+      if (!isPro()) { incrementDailyUsage(); updateProUI(); }
     } else {
       errorAnalyze.textContent = data.debug || data.error || 'Erreur inconnue';
       errorAnalyze.style.display = 'block';
