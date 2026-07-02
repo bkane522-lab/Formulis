@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulis</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#2b6cb0">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f8fc;
+    color: #1a2b3c;
+    min-height: 100vh;
+    padding: 18px;
+    line-height: 1.5;
+  }
+  header { text-align: center; margin-bottom: 22px; }
+  header .icon { font-size: 44px; }
+  header h1 {
+    font-size: 24px;
+    color: #2b6cb0;
+    margin-top: 6px;
+  }
+  header p { font-size: 14px; color: #4a5a6a; margin-top: 4px; }
+
+  .card {
+    background: #ffffff;
+    border: 1px solid #d8e4f0;
+    border-radius: 14px;
+    padding: 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 8px rgba(43,108,176,0.08);
+  }
+
+  .card h2 {
+    font-size: 17px;
+    color: #1a2b3c;
+    margin-bottom: 12px;
+  }
+
+  .quick-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .quick-btn {
+    background: #eaf2fb;
+    border: 1px solid #c3d9ef;
+    border-radius: 12px;
+    padding: 14px 8px;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a4a7a;
+    cursor: pointer;
+  }
+  .quick-btn .emoji { font-size: 26px; display: block; margin-bottom: 4px; }
+
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 1px solid #c3d9ef;
+    font-size: 17px;
+    font-family: inherit;
+    resize: vertical;
+    margin-top: 6px;
+  }
+
+  button.primary {
+    width: 100%;
+    background: #2b6cb0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    margin-top: 14px;
+    cursor: pointer;
+  }
+  button.primary:disabled { opacity: 0.6; }
+
+  .loading {
+    text-align: center;
+    font-size: 15px;
+    color: #4a5a6a;
+    margin-top: 10px;
+    display: none;
+  }
+
+  .answer-box {
+    display: none;
+    background: #eaf7ee;
+    border: 1px solid #bfe3c9;
+    border-radius: 14px;
+    padding: 18px;
+    margin-top: 16px;
+    font-size: 17px;
+    white-space: pre-wrap;
+  }
+  .answer-box h3 {
+    color: #1e7a3c;
+    margin-bottom: 10px;
+    font-size: 16px;
+  }
+
+  .error-box {
+    display: none;
+    background: #fbeaea;
+    border: 1px solid #eec3c3;
+    border-radius: 14px;
+    padding: 16px;
+    margin-top: 16px;
+    font-size: 15px;
+    color: #7a2020;
+  }
+
+  .disclaimer {
+    text-align: center;
+    font-size: 12px;
+    color: #6a7a8a;
+    margin-top: 24px;
+    line-height: 1.6;
+    padding: 0 6px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="icon">📋</div>
+  <h1>Formulis</h1>
+  <p>Vos démarches, expliquées simplement</p>
+</header>
+
+<div class="card">
+  <h2>Choisissez votre démarche</h2>
+  <div class="quick-grid">
+    <div class="quick-btn" data-topic="Carte d'identité">
+      <span class="emoji">🪪</span>Carte d'identité
+    </div>
+    <div class="quick-btn" data-topic="CAF / allocations">
+      <span class="emoji">👨‍👩‍👧</span>CAF
+    </div>
+    <div class="quick-btn" data-topic="Retraite">
+      <span class="emoji">🧓</span>Retraite
+    </div>
+    <div class="quick-btn" data-topic="Impôts">
+      <span class="emoji">🧾</span>Impôts
+    </div>
+    <div class="quick-btn" data-topic="Sécurité sociale / Carte vitale">
+      <span class="emoji">🏥</span>Sécu / Vitale
+    </div>
+    <div class="quick-btn" data-topic="Logement / APL">
+      <span class="emoji">🏠</span>Logement
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>Ou décrivez votre situation</h2>
+  <textarea id="userQuestion" placeholder="Exemple : Ma carte vitale est perdue, comment faire pour en avoir une nouvelle ?"></textarea>
+  <button class="primary" id="askBtn">Obtenir de l'aide</button>
+  <p class="loading" id="loadingMsg">On regarde ça pour vous, un instant...</p>
+</div>
+
+<div class="answer-box" id="answerBox">
+  <h3>✅ Voici comment faire :</h3>
+  <div id="answerText"></div>
+</div>
+
+<div class="error-box" id="errorBox">
+  Une erreur est survenue. Vérifiez votre connexion et réessayez, ou demandez à un proche de vous aider.
+</div>
+
+<p class="disclaimer">
+  Formulis fournit des informations générales générées automatiquement et ne remplace pas les conseils officiels d'un organisme administratif. En cas de doute, contactez directement l'administration concernée ou rendez-vous dans un point d'accueil France Services.
+</p>
+
+<script>
+const askBtn = document.getElementById('askBtn');
+const userQuestion = document.getElementById('userQuestion');
+const answerBox = document.getElementById('answerBox');
+const answerText = document.getElementById('answerText');
+const errorBox = document.getElementById('errorBox');
+const loadingMsg = document.getElementById('loadingMsg');
+
+document.querySelectorAll('.quick-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const topic = btn.getAttribute('data-topic');
+    userQuestion.value = `J'ai besoin d'aide pour : ${topic}. Pouvez-vous m'expliquer les démarches à suivre étape par étape ?`;
+    askForHelp();
+  });
+});
+
+askBtn.addEventListener('click', askForHelp);
+
+async function askForHelp() {
+  const question = userQuestion.value.trim();
+  if (!question) {
+    alert('Merci de décrire votre situation ou de choisir une démarche ci-dessus.');
+    return;
+  }
+
+  answerBox.style.display = 'none';
+  errorBox.style.display = 'none';
+  loadingMsg.style.display = 'block';
+  askBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/assist', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
+    });
+    const data = await res.json();
+
+    if (data.answer) {
+      answerText.textContent = data.answer;
+      answerBox.style.display = 'block';
+    } else {
+      errorBox.style.display = 'block';
+    }
+  } catch (e) {
+    errorBox.style.display = 'block';
+  }
+
+  loadingMsg.style.display = 'none';
+  askBtn.disabled = false;
+}
+</script>
+</body>
+</html>
