@@ -5,233 +5,683 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Formulis</title>
 <link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#2b6cb0">
+<meta name="theme-color" content="#0f2647">
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
   body {
     font-family: 'Segoe UI', Arial, sans-serif;
-    background: #f4f8fc;
-    color: #1a2b3c;
+    background: #eef3f9;
+    color: #10233d;
     min-height: 100vh;
-    padding: 18px;
+    padding-bottom: 84px;
     line-height: 1.5;
   }
-  header { text-align: center; margin-bottom: 22px; }
-  header .icon { font-size: 44px; }
-  header h1 {
-    font-size: 24px;
-    color: #2b6cb0;
-    margin-top: 6px;
+
+  /* ---- Header ---- */
+  .topbar {
+    background: #0f2647;
+    color: #fff;
+    padding: 18px 20px 22px;
+    border-radius: 0 0 20px 20px;
   }
-  header p { font-size: 14px; color: #4a5a6a; margin-top: 4px; }
+  .topbar-row { display: flex; align-items: center; gap: 12px; }
+  .topbar .icon-badge {
+    width: 46px; height: 46px;
+    background: #fff;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 24px;
+    flex-shrink: 0;
+  }
+  .topbar h1 { font-size: 20px; }
+  .topbar p { font-size: 13px; opacity: 0.75; margin-top: 2px; }
+
+  /* ---- Generic ---- */
+  .screen { display: none; padding: 18px; }
+  .screen.active { display: block; }
 
   .card {
-    background: #ffffff;
-    border: 1px solid #d8e4f0;
-    border-radius: 14px;
+    background: #fff;
+    border: 1px solid #dbe6f2;
+    border-radius: 16px;
     padding: 20px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 10px rgba(15,38,71,0.06);
+  }
+
+  .hero {
+    background: #0f2647;
+    color: #fff;
+    border-radius: 18px;
+    padding: 22px;
     margin-bottom: 16px;
-    box-shadow: 0 2px 8px rgba(43,108,176,0.08);
   }
+  .hero .tag {
+    font-size: 11px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: #7ee3b8;
+    font-weight: 700;
+  }
+  .hero h2 { font-size: 26px; margin: 8px 0 10px; line-height: 1.25; }
+  .hero p { font-size: 14px; opacity: 0.85; }
 
-  .card h2 {
-    font-size: 17px;
-    color: #1a2b3c;
-    margin-bottom: 12px;
-  }
-
-  .quick-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
-  .quick-btn {
-    background: #eaf2fb;
-    border: 1px solid #c3d9ef;
-    border-radius: 12px;
-    padding: 14px 8px;
-    text-align: center;
-    font-size: 15px;
-    font-weight: 600;
-    color: #1a4a7a;
+  .cta-block {
+    background: #14335e;
+    color: #fff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 14px;
     cursor: pointer;
   }
-  .quick-btn .emoji { font-size: 26px; display: block; margin-bottom: 4px; }
+  .cta-block .tag { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; color: #7ee3b8; font-weight: 700; }
+  .cta-block h3 { font-size: 21px; margin: 8px 0 6px; }
+  .cta-block p { font-size: 13px; opacity: 0.85; }
 
-  textarea {
+  .list-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: #fff;
+    border: 1px solid #dbe6f2;
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+  }
+  .list-item .emoji-box {
+    width: 44px; height: 44px;
+    background: #eaf2fb;
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .list-item strong { font-size: 16px; display: block; }
+  .list-item span { font-size: 13px; color: #5a6b7d; }
+
+  h2.section-title { font-size: 19px; margin-bottom: 12px; }
+
+  textarea, input, select {
     width: 100%;
-    min-height: 110px;
     padding: 14px;
     border-radius: 12px;
     border: 1px solid #c3d9ef;
-    font-size: 17px;
+    font-size: 16px;
     font-family: inherit;
-    resize: vertical;
-    margin-top: 6px;
+    background: #f7fafd;
   }
+  textarea { min-height: 130px; resize: vertical; }
 
-  button.primary {
+  button {
     width: 100%;
-    background: #2b6cb0;
-    color: #fff;
-    font-size: 18px;
-    font-weight: bold;
-    padding: 16px;
-    border: none;
+    padding: 15px;
     border-radius: 12px;
-    margin-top: 14px;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    margin-top: 10px;
     cursor: pointer;
   }
-  button.primary:disabled { opacity: 0.6; }
-
-  .loading {
-    text-align: center;
-    font-size: 15px;
-    color: #4a5a6a;
-    margin-top: 10px;
-    display: none;
+  button.primary { background: #2b6cb0; color: #fff; }
+  button.primary:disabled { opacity: 0.55; }
+  button.ghost { background: #eaf2fb; color: #14335e; }
+  button.dark { background: #0f2647; color: #fff; }
+  button.chip {
+    width: auto;
+    display: inline-block;
+    padding: 9px 16px;
+    margin: 0 8px 8px 0;
+    border-radius: 20px;
+    background: #eaf2fb;
+    color: #14335e;
+    font-size: 13px;
+    font-weight: 600;
   }
+  button.chip.active { background: #0f2647; color: #fff; }
+
+  label.field-label { font-size: 13px; font-weight: 700; color: #33465c; display: block; margin: 14px 0 6px; }
+
+  .progress-wrap { background: #eaf2fb; border-radius: 14px; padding: 14px; margin-bottom: 16px; }
+  .progress-wrap .step-label { font-size: 13px; color: #5a6b7d; margin-bottom: 8px; }
+  .progress-bar-bg { background: #d6e4f2; border-radius: 8px; height: 8px; overflow: hidden; }
+  .progress-bar-fill { background: #2b6cb0; height: 100%; border-radius: 8px; transition: width 0.3s; }
 
   .answer-box {
-    display: none;
     background: #eaf7ee;
     border: 1px solid #bfe3c9;
     border-radius: 14px;
     padding: 18px;
-    margin-top: 16px;
-    font-size: 17px;
+    margin-top: 4px;
+    font-size: 15px;
     white-space: pre-wrap;
   }
-  .answer-box h3 {
-    color: #1e7a3c;
-    margin-bottom: 10px;
-    font-size: 16px;
-  }
+  .answer-box h3 { color: #1e7a3c; font-size: 15px; margin-bottom: 10px; }
 
   .error-box {
-    display: none;
     background: #fbeaea;
     border: 1px solid #eec3c3;
     border-radius: 14px;
     padding: 16px;
-    margin-top: 16px;
-    font-size: 15px;
+    margin-top: 10px;
+    font-size: 14px;
     color: #7a2020;
+  }
+
+  .loading { text-align: center; font-size: 14px; color: #5a6b7d; margin-top: 10px; display: none; }
+
+  .template-card { display: none; }
+  .template-card.show { display: block; }
+  .template-preview {
+    background: #f7fafd;
+    border: 1px solid #dbe6f2;
+    border-radius: 14px;
+    padding: 16px;
+    font-size: 15px;
+    white-space: pre-wrap;
+    margin-bottom: 14px;
+  }
+
+  .reminder-item {
+    background: #fff;
+    border: 1px solid #dbe6f2;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+  }
+  .reminder-item strong { font-size: 15px; }
+  .reminder-item .meta { font-size: 12px; color: #5a6b7d; margin-top: 2px; }
+  .reminder-item .del { color: #b03030; font-size: 12px; margin-top: 8px; display: inline-block; cursor: pointer; }
+
+  .empty-note {
+    text-align: center;
+    font-size: 13px;
+    color: #8496a8;
+    padding: 18px;
+    border: 1px dashed #c3d9ef;
+    border-radius: 14px;
   }
 
   .disclaimer {
     text-align: center;
-    font-size: 12px;
-    color: #6a7a8a;
-    margin-top: 24px;
+    font-size: 11px;
+    color: #8496a8;
+    margin-top: 20px;
     line-height: 1.6;
     padding: 0 6px;
   }
+
+  /* ---- Bottom nav ---- */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #fff;
+    border-top: 1px solid #dbe6f2;
+    display: flex;
+    padding: 10px 6px calc(10px + env(safe-area-inset-bottom));
+    z-index: 50;
+  }
+  .nav-btn {
+    flex: 1;
+    text-align: center;
+    background: none;
+    border: none;
+    font-size: 11px;
+    font-weight: 700;
+    color: #8496a8;
+    padding: 4px;
+    margin: 0;
+  }
+  .nav-btn .nav-icon { font-size: 22px; display: block; margin-bottom: 2px; }
+  .nav-btn.active { color: #2b6cb0; }
 </style>
 </head>
 <body>
 
-<header>
-  <div class="icon">📋</div>
-  <h1>Formulis</h1>
-  <p>Vos démarches, expliquées simplement</p>
-</header>
-
-<div class="card">
-  <h2>Choisissez votre démarche</h2>
-  <div class="quick-grid">
-    <div class="quick-btn" data-topic="Carte d'identité">
-      <span class="emoji">🪪</span>Carte d'identité
-    </div>
-    <div class="quick-btn" data-topic="CAF / allocations">
-      <span class="emoji">👨‍👩‍👧</span>CAF
-    </div>
-    <div class="quick-btn" data-topic="Retraite">
-      <span class="emoji">🧓</span>Retraite
-    </div>
-    <div class="quick-btn" data-topic="Impôts">
-      <span class="emoji">🧾</span>Impôts
-    </div>
-    <div class="quick-btn" data-topic="Sécurité sociale / Carte vitale">
-      <span class="emoji">🏥</span>Sécu / Vitale
-    </div>
-    <div class="quick-btn" data-topic="Logement / APL">
-      <span class="emoji">🏠</span>Logement
+<div class="topbar">
+  <div class="topbar-row">
+    <div class="icon-badge">📋</div>
+    <div>
+      <h1>Formulis</h1>
+      <p>Vos démarches, expliquées simplement</p>
     </div>
   </div>
 </div>
 
-<div class="card">
-  <h2>Ou décrivez votre situation</h2>
-  <textarea id="userQuestion" placeholder="Exemple : Ma carte vitale est perdue, comment faire pour en avoir une nouvelle ?"></textarea>
-  <button class="primary" id="askBtn">Obtenir de l'aide</button>
-  <p class="loading" id="loadingMsg">On regarde ça pour vous, un instant...</p>
+<!-- ===== ACCUEIL ===== -->
+<div class="screen active" id="screen-accueil">
+  <div class="hero">
+    <div class="tag">Simple · Lisible · Rassurant</div>
+    <h2>Comprendre vos courriers, sans stress.</h2>
+    <p>Une aide claire pour savoir quoi faire et préparer une réponse.</p>
+  </div>
+
+  <div class="cta-block" onclick="goTab('assistant')">
+    <div class="tag">Commencer</div>
+    <h3>J'ai reçu un courrier</h3>
+    <p>On vous guide étape par étape.</p>
+  </div>
+
+  <div class="list-item" onclick="goTab('assistant')">
+    <div class="emoji-box">✉️</div>
+    <div><strong>Comprendre un courrier</strong><span>Résumé court et actions.</span></div>
+  </div>
+  <div class="list-item" onclick="goTab('modeles')">
+    <div class="emoji-box">✍️</div>
+    <div><strong>Préparer une réponse</strong><span>Modèles prêts à copier.</span></div>
+  </div>
+  <div class="list-item" onclick="goTab('rappels')">
+    <div class="emoji-box">🔔</div>
+    <div><strong>Ajouter un rappel</strong><span>Date, heure, notification.</span></div>
+  </div>
+
+  <p class="disclaimer">
+    Formulis fournit des informations générales générées automatiquement et ne remplace pas les conseils officiels d'un organisme administratif. En cas de doute, contactez directement l'administration concernée ou rendez-vous dans un point d'accueil France Services.
+  </p>
 </div>
 
-<div class="answer-box" id="answerBox">
-  <h3>✅ Voici comment faire :</h3>
-  <div id="answerText"></div>
+<!-- ===== ASSISTANT ===== -->
+<div class="screen" id="screen-assistant">
+  <div class="card">
+    <h2 class="section-title">Assistant guidé</h2>
+    <div class="progress-wrap">
+      <div class="step-label" id="stepLabel">Étape 1 sur 2</div>
+      <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:50%"></div></div>
+    </div>
+
+    <!-- step 1 -->
+    <div id="assistStep1">
+      <label class="field-label">Collez le texte du courrier reçu</label>
+      <textarea id="letterText" placeholder="Collez ici le texte principal du courrier..."></textarea>
+      <button class="ghost" id="pasteBtn">📋 Coller</button>
+      <button class="ghost" id="clearBtn">Effacer</button>
+      <button class="primary" id="analyzeBtn">Continuer</button>
+      <p class="loading" id="loadingAnalyze">On lit votre courrier, un instant...</p>
+      <div class="error-box" id="errorAnalyze" style="display:none;"></div>
+    </div>
+
+    <!-- step 2 -->
+    <div id="assistStep2" style="display:none;">
+      <div class="answer-box" id="summaryBox">
+        <h3>✅ Ce que dit ce courrier :</h3>
+        <div id="summaryText"></div>
+      </div>
+      <button class="primary" id="draftBtn">✍️ Préparer une réponse</button>
+      <button class="ghost" id="backStep1Btn">← Recommencer</button>
+      <p class="loading" id="loadingDraft">On prépare une réponse, un instant...</p>
+      <div class="answer-box" id="draftBox" style="display:none; margin-top:14px;">
+        <h3>📨 Proposition de réponse :</h3>
+        <div id="draftText"></div>
+        <button class="dark" id="copyDraftBtn" style="margin-top:12px;">Copier ce texte</button>
+      </div>
+    </div>
+  </div>
+
+  <p class="disclaimer">
+    Cette analyse est générée automatiquement et reste générale. Vérifiez toujours les informations auprès de l'organisme concerné avant d'envoyer une réponse.
+  </p>
 </div>
 
-<div class="error-box" id="errorBox">
-  Une erreur est survenue. Vérifiez votre connexion et réessayez, ou demandez à un proche de vous aider.
+<!-- ===== MODELES ===== -->
+<div class="screen" id="screen-modeles">
+  <div class="card">
+    <h2 class="section-title">Modèles de réponse</h2>
+    <div id="chipRow"></div>
+  </div>
+
+  <div id="templateList"></div>
+
+  <div class="card template-card" id="templateDetail">
+    <button class="ghost" id="templateBackBtn">← Retour</button>
+    <h2 class="section-title" id="templateTitle" style="margin-top:14px;"></h2>
+    <div class="template-preview" id="templateBody"></div>
+    <button class="dark" id="templateCopyBtn">Copier</button>
+  </div>
 </div>
 
-<p class="disclaimer">
-  Formulis fournit des informations générales générées automatiquement et ne remplace pas les conseils officiels d'un organisme administratif. En cas de doute, contactez directement l'administration concernée ou rendez-vous dans un point d'accueil France Services.
-</p>
+<!-- ===== RAPPELS ===== -->
+<div class="screen" id="screen-rappels">
+  <div class="card">
+    <h2 class="section-title">Rappel</h2>
+    <p style="font-size:13px; color:#5a6b7d; margin-bottom:14px;">Choisissez rapidement une date.</p>
+
+    <label class="field-label">Titre</label>
+    <input id="remTitle" placeholder="Exemple : Répondre à la CPAM">
+
+    <button class="ghost" data-quick="tonight">Ce soir</button>
+    <button class="ghost" data-quick="tomorrow">Demain</button>
+    <button class="ghost" data-quick="3days">Dans 3 jours</button>
+
+    <label class="field-label">Date</label>
+    <input type="date" id="remDate">
+
+    <label class="field-label">Heure</label>
+    <input type="time" id="remTime">
+
+    <label class="field-label">Note</label>
+    <input id="remNote" placeholder="Justificatifs, copie, preuve d'envoi...">
+
+    <button class="primary" id="addReminderBtn">Ajouter</button>
+    <button class="ghost" id="enableNotifBtn">Activer les notifications</button>
+    <button class="ghost" id="testAlertBtn">Tester l'alerte</button>
+  </div>
+
+  <div class="card">
+    <h2 class="section-title">Mes rappels</h2>
+    <div id="reminderList"><p class="empty-note">Aucun rappel pour le moment.</p></div>
+  </div>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" data-tab="accueil"><span class="nav-icon">🏠</span>Accueil</button>
+  <button class="nav-btn" data-tab="assistant"><span class="nav-icon">💬</span>Assistant</button>
+  <button class="nav-btn" data-tab="modeles"><span class="nav-icon">📝</span>Modèles</button>
+  <button class="nav-btn" data-tab="rappels"><span class="nav-icon">🔔</span>Rappels</button>
+</div>
 
 <script>
-const askBtn = document.getElementById('askBtn');
-const userQuestion = document.getElementById('userQuestion');
-const answerBox = document.getElementById('answerBox');
-const answerText = document.getElementById('answerText');
-const errorBox = document.getElementById('errorBox');
-const loadingMsg = document.getElementById('loadingMsg');
+/* ===================== NAVIGATION ===================== */
+function goTab(tab) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + tab).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll('.nav-btn').forEach(btn => {
+  btn.addEventListener('click', () => goTab(btn.dataset.tab));
+});
 
-document.querySelectorAll('.quick-btn').forEach(btn => {
-  btn.addEventListener('click', () => {
-    const topic = btn.getAttribute('data-topic');
-    userQuestion.value = `J'ai besoin d'aide pour : ${topic}. Pouvez-vous m'expliquer les démarches à suivre étape par étape ?`;
-    askForHelp();
+/* ===================== ASSISTANT (analyse + réponse) ===================== */
+const letterText = document.getElementById('letterText');
+const pasteBtn = document.getElementById('pasteBtn');
+const clearBtn = document.getElementById('clearBtn');
+const analyzeBtn = document.getElementById('analyzeBtn');
+const loadingAnalyze = document.getElementById('loadingAnalyze');
+const errorAnalyze = document.getElementById('errorAnalyze');
+const assistStep1 = document.getElementById('assistStep1');
+const assistStep2 = document.getElementById('assistStep2');
+const stepLabel = document.getElementById('stepLabel');
+const progressFill = document.getElementById('progressFill');
+const summaryText = document.getElementById('summaryText');
+const draftBtn = document.getElementById('draftBtn');
+const backStep1Btn = document.getElementById('backStep1Btn');
+const loadingDraft = document.getElementById('loadingDraft');
+const draftBox = document.getElementById('draftBox');
+const draftText = document.getElementById('draftText');
+const copyDraftBtn = document.getElementById('copyDraftBtn');
+
+let lastLetter = '';
+
+pasteBtn.addEventListener('click', async () => {
+  try {
+    const text = await navigator.clipboard.readText();
+    letterText.value = text;
+  } catch (e) {
+    alert("Impossible de coller automatiquement. Appuyez longuement dans la zone de texte puis choisissez Coller.");
+  }
+});
+clearBtn.addEventListener('click', () => { letterText.value = ''; });
+
+analyzeBtn.addEventListener('click', async () => {
+  const text = letterText.value.trim();
+  if (!text) { alert('Collez ou tapez le texte du courrier reçu.'); return; }
+  lastLetter = text;
+
+  errorAnalyze.style.display = 'none';
+  loadingAnalyze.style.display = 'block';
+  analyzeBtn.disabled = true;
+
+  try {
+    const res = await fetch('/api/courrier', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: 'resume', text })
+    });
+    const data = await res.json();
+    if (data.result) {
+      summaryText.textContent = data.result;
+      stepLabel.textContent = 'Étape 2 sur 2';
+      progressFill.style.width = '100%';
+      assistStep1.style.display = 'none';
+      assistStep2.style.display = 'block';
+      draftBox.style.display = 'none';
+    } else {
+      errorAnalyze.textContent = data.debug || data.error || 'Erreur inconnue';
+      errorAnalyze.style.display = 'block';
+    }
+  } catch (e) {
+    errorAnalyze.textContent = e.message;
+    errorAnalyze.style.display = 'block';
+  }
+
+  loadingAnalyze.style.display = 'none';
+  analyzeBtn.disabled = false;
+});
+
+backStep1Btn.addEventListener('click', () => {
+  assistStep1.style.display = 'block';
+  assistStep2.style.display = 'none';
+  stepLabel.textContent = 'Étape 1 sur 2';
+  progressFill.style.width = '50%';
+});
+
+draftBtn.addEventListener('click', async () => {
+  loadingDraft.style.display = 'block';
+  draftBtn.disabled = true;
+  draftBox.style.display = 'none';
+
+  try {
+    const res = await fetch('/api/courrier', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ mode: 'reponse', text: lastLetter })
+    });
+    const data = await res.json();
+    if (data.result) {
+      draftText.textContent = data.result;
+      draftBox.style.display = 'block';
+    } else {
+      alert(data.error || 'Erreur lors de la génération de la réponse.');
+    }
+  } catch (e) {
+    alert(e.message);
+  }
+
+  loadingDraft.style.display = 'none';
+  draftBtn.disabled = false;
+});
+
+copyDraftBtn.addEventListener('click', () => {
+  navigator.clipboard.writeText(draftText.textContent).then(() => {
+    copyDraftBtn.textContent = 'Copié ✓';
+    setTimeout(() => { copyDraftBtn.textContent = 'Copier ce texte'; }, 1800);
   });
 });
 
-askBtn.addEventListener('click', askForHelp);
+/* ===================== MODELES ===================== */
+const templates = [
+  { cat: 'CPAM', title: "CPAM - Réclamation", desc: "Demander le suivi ou la correction d'un dossier.",
+    body: "Madame, Monsieur,\n\nObjet : Réclamation concernant mon dossier\n\nJe fais suite à ma demande auprès de la CPAM restée sans réponse satisfaisante à ce jour.\n\nJe vous remercie de bien vouloir examiner à nouveau mon dossier et de me tenir informé(e) de la suite donnée.\n\nJe reste à votre disposition pour tout complément d'information.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'CPAM', title: "CPAM - Contester une décision", desc: "Demander un réexamen.",
+    body: "Madame, Monsieur,\n\nObjet : Demande de réexamen de décision\n\nJe conteste la décision reçue concernant mon dossier et souhaite en demander le réexamen.\n\nVous trouverez ci-joint les documents utiles à l'appui de ma demande.\n\nJe vous remercie de bien vouloir réétudier ma situation.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'CPAM', title: "CPAM - Remboursement transport / soins", desc: "Demander un suivi de remboursement.",
+    body: "Madame, Monsieur,\n\nObjet : Suivi de remboursement\n\nJe vous sollicite afin de connaître l'état d'avancement du remboursement de mes frais de transport / soins engagés récemment.\n\nJe vous remercie de bien vouloir me communiquer un délai estimatif.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'CAF', title: "CAF - Trop-perçu", desc: "Demander le détail ou un échéancier.",
+    body: "Madame, Monsieur,\n\nObjet : Demande d'explication concernant une somme\n\nJe fais suite à votre courrier concernant une somme indiquée dans mon dossier auprès de la CAF.\n\nJe souhaite obtenir le détail du montant demandé ainsi que la période concernée.\n\nJe vous remercie de bien vouloir me transmettre les explications nécessaires.\n\nJe vous remercie par avance pour votre retour.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'CAF', title: "CAF - Envoyer des justificatifs", desc: "Document manquant ou complément.",
+    body: "Madame, Monsieur,\n\nObjet : Envoi de justificatifs\n\nSuite à votre demande, veuillez trouver ci-joint les documents justificatifs nécessaires à la mise à jour de mon dossier.\n\nJe reste disponible pour tout document complémentaire.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Banque', title: "Banque - Contester des frais", desc: "Demander l'annulation de frais bancaires.",
+    body: "Madame, Monsieur,\n\nObjet : Contestation de frais bancaires\n\nJe conteste les frais prélevés récemment sur mon compte et vous demande de bien vouloir procéder à leur annulation.\n\nJe vous remercie de m'apporter une réponse dans les meilleurs délais.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Banque', title: "Banque - Demande de RIB / attestation", desc: "Demander un document officiel.",
+    body: "Madame, Monsieur,\n\nObjet : Demande de document\n\nJe vous prie de bien vouloir me faire parvenir un relevé d'identité bancaire / une attestation à jour concernant mon compte.\n\nJe vous remercie par avance.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Assurance', title: "Assurance - Déclarer un sinistre", desc: "Informer votre assureur d'un incident.",
+    body: "Madame, Monsieur,\n\nObjet : Déclaration de sinistre\n\nJe vous informe par la présente d'un sinistre survenu récemment et vous prie de bien vouloir m'indiquer la marche à suivre pour ma prise en charge.\n\nJe reste à votre disposition pour tout justificatif nécessaire.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Assurance', title: "Assurance - Résilier un contrat", desc: "Mettre fin à un contrat d'assurance.",
+    body: "Madame, Monsieur,\n\nObjet : Demande de résiliation de contrat\n\nJe vous informe de ma volonté de résilier mon contrat, conformément aux conditions prévues.\n\nJe vous remercie de bien vouloir m'confirmer la date de prise d'effet de cette résiliation.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Retraite', title: "Retraite - Demande de relevé de carrière", desc: "Obtenir le récapitulatif de vos trimestres.",
+    body: "Madame, Monsieur,\n\nObjet : Demande de relevé de carrière\n\nJe vous prie de bien vouloir me communiquer mon relevé de carrière actualisé.\n\nJe vous remercie par avance pour votre retour.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Impôts', title: "Impôts - Demande de délai de paiement", desc: "Demander un échelonnement.",
+    body: "Madame, Monsieur,\n\nObjet : Demande de délai de paiement\n\nJe rencontre actuellement des difficultés pour régler la somme demandée dans les délais impartis.\n\nJe sollicite un échelonnement de paiement et reste à votre disposition pour en discuter les modalités.\n\nCordialement,\n\n[Votre prénom et nom]" },
+  { cat: 'Logement', title: "Logement - Demande de quittance", desc: "Obtenir un justificatif de paiement.",
+    body: "Madame, Monsieur,\n\nObjet : Demande de quittance de loyer\n\nJe vous prie de bien vouloir me faire parvenir la quittance de loyer correspondant au mois écoulé.\n\nJe vous remercie par avance.\n\nCordialement,\n\n[Votre prénom et nom]" }
+];
 
-async function askForHelp() {
-  const question = userQuestion.value.trim();
-  if (!question) {
-    alert('Merci de décrire votre situation ou de choisir une démarche ci-dessus.');
+const categories = ['Tous', ...Array.from(new Set(templates.map(t => t.cat)))];
+let activeCat = 'Tous';
+
+const chipRow = document.getElementById('chipRow');
+categories.forEach(cat => {
+  const b = document.createElement('button');
+  b.className = 'chip' + (cat === 'Tous' ? ' active' : '');
+  b.textContent = cat;
+  b.addEventListener('click', () => {
+    activeCat = cat;
+    document.querySelectorAll('#chipRow .chip').forEach(c => c.classList.remove('active'));
+    b.classList.add('active');
+    renderTemplateList();
+  });
+  chipRow.appendChild(b);
+});
+
+const templateList = document.getElementById('templateList');
+const templateDetail = document.getElementById('templateDetail');
+const templateTitle = document.getElementById('templateTitle');
+const templateBody = document.getElementById('templateBody');
+const templateCopyBtn = document.getElementById('templateCopyBtn');
+const templateBackBtn = document.getElementById('templateBackBtn');
+
+function renderTemplateList() {
+  templateList.innerHTML = '';
+  templateDetail.classList.remove('show');
+  const filtered = activeCat === 'Tous' ? templates : templates.filter(t => t.cat === activeCat);
+  filtered.forEach(t => {
+    const el = document.createElement('div');
+    el.className = 'list-item';
+    el.innerHTML = `<div class="emoji-box">📝</div><div><strong>${t.title}</strong><span>${t.desc}</span></div>`;
+    el.addEventListener('click', () => openTemplate(t));
+    templateList.appendChild(el);
+  });
+}
+function openTemplate(t) {
+  templateList.style.display = 'none';
+  templateDetail.classList.add('show');
+  templateTitle.textContent = t.title;
+  templateBody.textContent = t.body;
+  templateCopyBtn.onclick = () => {
+    navigator.clipboard.writeText(t.body).then(() => {
+      templateCopyBtn.textContent = 'Copié ✓';
+      setTimeout(() => { templateCopyBtn.textContent = 'Copier'; }, 1800);
+    });
+  };
+}
+templateBackBtn.addEventListener('click', () => {
+  templateList.style.display = 'block';
+  templateDetail.classList.remove('show');
+});
+renderTemplateList();
+
+/* ===================== RAPPELS ===================== */
+const remTitle = document.getElementById('remTitle');
+const remDate = document.getElementById('remDate');
+const remTime = document.getElementById('remTime');
+const remNote = document.getElementById('remNote');
+const reminderList = document.getElementById('reminderList');
+
+function getReminders() {
+  return JSON.parse(localStorage.getItem('formulis_reminders') || '[]');
+}
+function saveReminders(list) {
+  localStorage.setItem('formulis_reminders', JSON.stringify(list));
+}
+function renderReminders() {
+  const list = getReminders();
+  if (list.length === 0) {
+    reminderList.innerHTML = '<p class="empty-note">Aucun rappel pour le moment.</p>';
     return;
   }
-
-  answerBox.style.display = 'none';
-  errorBox.style.display = 'none';
-  loadingMsg.style.display = 'block';
-  askBtn.disabled = true;
-
-  try {
-    const res = await fetch('/api/assist', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ question })
+  reminderList.innerHTML = '';
+  list.sort((a, b) => new Date(a.datetime) - new Date(b.datetime)).forEach(r => {
+    const d = new Date(r.datetime);
+    const el = document.createElement('div');
+    el.className = 'reminder-item';
+    el.innerHTML = `<strong>${r.title}</strong>
+      <div class="meta">${d.toLocaleDateString('fr-FR')} à ${d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'})}${r.note ? ' — ' + r.note : ''}</div>
+      <span class="del" data-id="${r.id}">Supprimer</span>`;
+    reminderList.appendChild(el);
+  });
+  reminderList.querySelectorAll('.del').forEach(d => {
+    d.addEventListener('click', () => {
+      const updated = getReminders().filter(r => r.id !== d.dataset.id);
+      saveReminders(updated);
+      renderReminders();
     });
-    const data = await res.json();
-
-    if (data.answer) {
-      answerText.textContent = data.answer;
-      answerBox.style.display = 'block';
-    } else {
-      errorBox.style.display = 'block';
-    }
-  } catch (e) {
-    errorBox.style.display = 'block';
-  }
-
-  loadingMsg.style.display = 'none';
-  askBtn.disabled = false;
+  });
 }
+renderReminders();
+
+document.querySelectorAll('[data-quick]').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const now = new Date();
+    let target = new Date();
+    if (btn.dataset.quick === 'tonight') { target.setHours(19, 0, 0, 0); }
+    if (btn.dataset.quick === 'tomorrow') { target.setDate(now.getDate() + 1); target.setHours(9, 0, 0, 0); }
+    if (btn.dataset.quick === '3days') { target.setDate(now.getDate() + 3); target.setHours(9, 0, 0, 0); }
+    remDate.value = target.toISOString().slice(0, 10);
+    remTime.value = target.toTimeString().slice(0, 5);
+  });
+});
+
+document.getElementById('addReminderBtn').addEventListener('click', () => {
+  const title = remTitle.value.trim();
+  if (!title) { alert('Merci de donner un titre au rappel.'); return; }
+  if (!remDate.value || !remTime.value) { alert('Merci de choisir une date et une heure.'); return; }
+
+  const datetime = `${remDate.value}T${remTime.value}:00`;
+  const reminder = {
+    id: Date.now().toString(),
+    title,
+    datetime,
+    note: remNote.value.trim()
+  };
+  const list = getReminders();
+  list.push(reminder);
+  saveReminders(list);
+  renderReminders();
+  scheduleNotification(reminder);
+
+  remTitle.value = ''; remDate.value = ''; remTime.value = ''; remNote.value = '';
+});
+
+document.getElementById('enableNotifBtn').addEventListener('click', () => {
+  if (!('Notification' in window)) { alert("Les notifications ne sont pas supportées sur cet appareil/navigateur."); return; }
+  Notification.requestPermission().then(perm => {
+    if (perm === 'granted') alert('Notifications activées ✅');
+    else alert("Notifications non autorisées. Vous pouvez les activer dans les paramètres du navigateur.");
+  });
+});
+
+document.getElementById('testAlertBtn').addEventListener('click', () => {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('Formulis', { body: 'Ceci est un test de notification.' });
+  } else {
+    alert("Activez d'abord les notifications pour tester l'alerte.");
+  }
+});
+
+function scheduleNotification(reminder) {
+  if (!('Notification' in window) || Notification.permission !== 'granted') return;
+  const delay = new Date(reminder.datetime).getTime() - Date.now();
+  // Ne fonctionne que si l'application reste ouverte (limite technique des PWA sans serveur de notifications).
+  if (delay > 0 && delay < 2147000000) {
+    setTimeout(() => {
+      new Notification('Formulis — Rappel', { body: reminder.title });
+    }, delay);
+  }
+}
+// Reprogrammer les rappels futurs au chargement (si l'app reste ouverte)
+getReminders().forEach(r => {
+  if (new Date(r.datetime).getTime() > Date.now()) scheduleNotification(r);
+});
 </script>
 </body>
 </html>

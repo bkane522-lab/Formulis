@@ -3,7 +3,7 @@
   "short_name": "Formulis",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4f8fc",
-  "theme_color": "#2b6cb0",
+  "background_color": "#eef3f9",
+  "theme_color": "#0f2647",
   "icons": []
 }
